@@ -1,47 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Trading Strategy Tester</title>
-    <style>
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            font-family: Arial, sans-serif;
-        }
-        form {
-            text-align: center;
-        }
-        textarea {
-            width: 300px;
-            height: 100px;
-            padding: 10px;
-            font-size: 16px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        .result {
-            margin-top: 20px;
-            font-weight: bold;
-        }
-    </style>
+  <title>Trading Strategy Tester</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
-    <form method="post">
-        <textarea name="prompt" placeholder="Enter your prompt here"></textarea>
-        <br>
-        <button type="submit">Submit</button>
-    </form>
-
-    {% if result %}
-    <div class="result">
-        <h2>Result:</h2>
-        <p>{{ result }}</p>
+  <div id="container">
+    <h1 id="title" class="text-3xl font-bold">TST</h1>
+    <div id="prompt-section">
+      <input type="text" id="prompt" placeholder="Enter your strategy..." class="w-96 border p-3 rounded-xl">
+      <button onclick="submitPrompt()" class="p-3 rounded-xl bg-blue-600 text-white">Submit</button>
     </div>
-    {% endif %}
+  </div>
+
+  <div class="loader" id="loading-spinner"></div>
+
+  <script>
+    function submitPrompt() {
+    const prompt = document.getElementById('prompt').value;
+    document.getElementById('loading-spinner').style.display = 'block';
+    document.getElementById('prompt-section').style.display = 'none';
+
+    // Trigger the animation immediately
+    document.getElementById('title').classList.add('top-left');
+  }
+  </script>
 </body>
 </html>
