@@ -106,18 +106,12 @@ function toggleLoader(show) {
 
 
 function renderTradesAndStats(trades, stats) {
-  const tradesSection = document.getElementById('trades-section');
   const statsSection = document.getElementById('stats-section');
+  const tradesSection = document.getElementById('trades-section');
 
   tradesSection.innerHTML = '';
   statsSection.innerHTML = '';
 
-  const wrapper = document.createElement('div');
-  wrapper.className = 'stats-trades-wrapper';
-
-  // === LEFT: Stats with Tabs ===
-  const statsLeft = document.createElement('div');
-  statsLeft.className = 'stats-left';
 
   const tabHeader = document.createElement('div');
   tabHeader.className = 'stats-tab-header';
@@ -135,34 +129,96 @@ function renderTradesAndStats(trades, stats) {
 
   const overviewTab = document.createElement('div');
   overviewTab.className = 'stats-tab-panel';
+  overviewTab.style.display = 'grid';
+  overviewTab.style.gridTemplateColumns = '1fr 1fr';
+  overviewTab.style.gridTemplateRows = '1fr 1fr 1fr';
+  overviewTab.style.gap = '16px';
+  overviewTab.style.flex = '1';
+  overviewTab.style.alignItems = 'center';
+
   const perfTab = document.createElement('div');
   perfTab.className = 'stats-tab-panel';
   perfTab.style.display = 'none';
+  perfTab.style.overflowY = 'auto';
 
-  // === Populate Overview ===
-  const overviewFields = ['total_pnl', 'total_trades', 'win_rate', 'avg_pnl', 'max_drawdown'];
-  overviewFields.forEach(key => {
-    if (key in stats) {
-      const row = document.createElement('div');
-      row.textContent = `${formatLabel(key)}: ${stats[key]}`;
-      overviewTab.appendChild(row);
+
+  // === Populate Overview with stacked labels + large values ===
+  function createMetricBlock(label, value, isPnl = false) {
+    const wrapper = document.createElement('div');
+    wrapper.style.display = 'flex';
+    wrapper.style.flexDirection = 'column';
+    wrapper.style.alignItems = 'center';
+    wrapper.style.justifyContent = 'center';
+    wrapper.style.height = '100%';
+
+    const labelEl = document.createElement('div');
+    labelEl.textContent = label;
+    labelEl.style.fontSize = 'clamp(10px, 0.9vh + 0.3vw, 14px)';
+    labelEl.style.color = '#777';
+    labelEl.style.marginBottom = '4px';
+
+    const valueEl = document.createElement('div');
+    valueEl.textContent = value;
+    valueEl.style.fontSize = 'clamp(18px, 2.5vh + 1vw, 60px)';
+    valueEl.style.fontWeight = 'bold';
+    valueEl.style.lineHeight = '1';
+    valueEl.style.textAlign = 'center';
+    if (isPnl) {
+      const num = parseFloat(stats['P&L']);
+      valueEl.style.color = num >= 0 ? 'green' : 'red';
     }
-  });
+
+    wrapper.appendChild(labelEl);
+    wrapper.appendChild(valueEl);
+    return wrapper;
+  }
+
+
+  // Add P&L full-width on top
+  overviewTab.appendChild(createMetricBlock('P&L', stats['P&L'], true));
+  overviewTab.appendChild(createMetricBlock('P&L(%)', stats['Percentage P&L'], true));
+
+
+  // 2nd row
+  overviewTab.appendChild(createMetricBlock('Total Trades', stats['Total Trades']));
+  overviewTab.appendChild(
+  createMetricBlock(
+    'Profitable Trades',
+    `${stats['Number of Winning Trades']} / ${stats['Total Trades']}`
+    )
+  );
+
+  // 3rd row
+  overviewTab.appendChild(createMetricBlock('Max Drawdown', stats['Max Drawdown']));
+  overviewTab.appendChild(createMetricBlock('Profit Factor', stats['Profit factor']));
 
   // === Populate Performance ===
   Object.keys(stats).forEach(key => {
-    if (!overviewFields.includes(key)) {
-      const row = document.createElement('div');
-      row.textContent = `${formatLabel(key)}: ${stats[key]}`;
-      perfTab.appendChild(row);
-    }
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.justifyContent = 'space-between';
+    row.style.padding = '6px 8px';
+    row.style.borderBottom = '1px solid #555';
+    row.style.fontSize = 'clamp(12px, 0.9vh + 0.4vw, 16px)';
+
+    const label = document.createElement('span');
+    label.textContent = formatLabel(key);
+    label.style.color = '#555';
+
+    const value = document.createElement('span');
+    value.textContent = stats[key];
+    value.style.fontWeight = 'bold';
+
+    row.appendChild(label);
+    row.appendChild(value);
+    perfTab.appendChild(row);
   });
 
   // === Tab Switching ===
   overviewBtn.addEventListener('click', () => {
     overviewBtn.classList.add('active');
     perfBtn.classList.remove('active');
-    overviewTab.style.display = 'block';
+    overviewTab.style.display = 'grid';
     perfTab.style.display = 'none';
   });
 
@@ -177,18 +233,13 @@ function renderTradesAndStats(trades, stats) {
   tabHeader.appendChild(perfBtn);
   tabContent.appendChild(overviewTab);
   tabContent.appendChild(perfTab);
-  statsLeft.appendChild(tabHeader);
-  statsLeft.appendChild(tabContent);
-
+  statsSection.appendChild(tabHeader);
+  statsSection.appendChild(tabContent);
 
   // === RIGHT: Trades Table ===
-  const tradesRight = document.createElement('div');
-  tradesRight.className = 'trades-right';
-
   const table = document.createElement('table');
   table.className = 'trades-table';
 
-  // Define columns you want to display (in order)
   const columns = [
     'ID',
     'Type',
@@ -205,7 +256,6 @@ function renderTradesAndStats(trades, stats) {
     'Drawdown'
   ];
 
-  // Table Head
   const thead = document.createElement('thead');
   const headerRow = document.createElement('tr');
   columns.forEach(col => {
@@ -216,7 +266,6 @@ function renderTradesAndStats(trades, stats) {
   thead.appendChild(headerRow);
   table.appendChild(thead);
 
-  // Table Body
   const tbody = document.createElement('tbody');
   trades.forEach((trade, index) => {
     const row = document.createElement('tr');
@@ -229,13 +278,10 @@ function renderTradesAndStats(trades, stats) {
   });
 
   table.appendChild(tbody);
-  tradesRight.appendChild(table);
+  tradesSection.appendChild(table);
 
-
-  wrapper.appendChild(statsLeft);
-  wrapper.appendChild(tradesRight);
-  statsSection.appendChild(wrapper);
 }
+
 
 function formatLabel(key) {
   return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -340,7 +386,10 @@ function renderAllGraphs() {
   container.innerHTML = '';
 
   // Always show the price graph
-  createAndRenderGraph(container, cachedGraphs.price_graph[darkMode ? 'dark' : 'light'], 'Price Graph');
+  const priceSection = document.createElement('div');
+  priceSection.className = 'graph-row';
+
+  createAndRenderGraph(priceSection, cachedGraphs.price_graph[darkMode ? 'dark' : 'light']);
 
   const buy = cachedGraphs.buy_graphs[darkMode ? 'dark' : 'light'];
   const sell = cachedGraphs.sell_graphs[darkMode ? 'dark' : 'light'];
@@ -367,6 +416,7 @@ function renderAllGraphs() {
     row.appendChild(sellCol);
   }
 
+  container.appendChild(priceSection);
   container.appendChild(row);
 }
 
@@ -424,3 +474,59 @@ function resetToInitialState() {
   const results = document.getElementById('results-section');
   fadeOut(results);
 }
+
+
+let isDragging = false;
+const dragBar = document.getElementById('drag-bar');
+const graphPane = document.getElementById('graph-pane');
+const resultsPane = document.getElementById('results-pane');
+
+dragBar.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  document.body.style.cursor = 'row-resize';
+});
+
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+  document.body.style.cursor = '';
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+
+  const containerHeight = document.getElementById('split-container').clientHeight;
+  const newGraphHeight = e.clientY - document.getElementById('split-container').offsetTop;
+
+
+  // Clamp values
+  const minHeight = 200;
+  const maxHeight = containerHeight - minHeight;
+
+  if (newGraphHeight >= minHeight && newGraphHeight <= maxHeight) {
+    graphPane.style.flex = 'unset';
+    graphPane.style.height = `${newGraphHeight}px`;
+    resultsPane.style.flex = 'unset';
+    resultsPane.style.height = `${containerHeight - newGraphHeight - dragBar.offsetHeight}px`;
+
+    // Resize graphs after resizing
+    setTimeout(() => {
+      document.querySelectorAll('.plotly-graph').forEach(graph => Plotly.Plots.resize(graph));
+    }, 30);
+  }
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Set initial 60/40 split
+  const containerHeight = document.getElementById('split-container').clientHeight;
+  const graphHeight = Math.floor(containerHeight * 0.6);
+
+
+  document.getElementById('graph-pane').style.height = `${graphHeight}px`;
+  document.getElementById('results-pane').style.height = `${containerHeight - graphHeight - 6}px`;
+
+  // Resize plotly graphs
+  setTimeout(() => {
+    document.querySelectorAll('.plotly-graph').forEach(graph => Plotly.Plots.resize(graph));
+  }, 100);
+});
