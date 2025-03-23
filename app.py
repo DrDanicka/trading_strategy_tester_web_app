@@ -39,7 +39,7 @@ def get_results():
     buy_graphs_light, buy_graphs_dark = get_light_dark_graphs(buy_graphs)
     sell_graphs_light, sell_graphs_dark = get_light_dark_graphs(sell_graphs)
 
-    trades_list = [trade.get_summary() for trade in trades]
+    trades_list = [trade.get_summary_with_units() for trade in trades]
 
     return jsonify({
         "trades": trades_list,
