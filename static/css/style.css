@@ -1,6 +1,7 @@
 html, body {
   height: 100%;
   overflow: hidden; /* no scrolling */
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 #results-section {
@@ -8,6 +9,8 @@ html, body {
   margin-top: 110px;
   position: relative;
   overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
 }
 
 #split-container {
@@ -58,11 +61,6 @@ html, body {
   height: 100%;
 }
 
-.graph-wrapper > div {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-}
 
 .graph-row {
   display: flex;
@@ -265,6 +263,7 @@ html, body {
   border-radius: 12px;
   font-size: 16px;
   box-sizing: content-box;
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
 }
 
 .arrow-button {
@@ -395,4 +394,11 @@ html, body {
 
 .dark-mode .tab-button.active {
   background-color: #666;
+}
+
+
+#llm-selector,
+#llm-choice,
+#llm-choice option {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
 }
