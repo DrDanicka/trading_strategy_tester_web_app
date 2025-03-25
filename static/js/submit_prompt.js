@@ -45,5 +45,6 @@ export function submitPrompt() {
     document.getElementById('title').style.pointerEvents = 'auto';
   })
   .catch(error => {toggleLoader(false);
+    console.error('Error:', error);
   });
 }

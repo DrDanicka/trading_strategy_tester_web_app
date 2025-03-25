@@ -74,7 +74,7 @@ export function renderTradesAndStats(trades, stats) {
 
   // Add P&L full-width on top
   overviewTab.appendChild(createMetricBlock('P&L', stats['P&L'], true));
-  overviewTab.appendChild(createMetricBlock('P&L(%)', stats['Percentage P&L'], true));
+  overviewTab.appendChild(createMetricBlock('P&L(%)', stats['P&L Percentage'], true));
 
   // 2nd row
   overviewTab.appendChild(createMetricBlock('Total Trades', stats['Total Trades']));
