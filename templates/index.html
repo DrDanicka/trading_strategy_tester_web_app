@@ -10,17 +10,27 @@
     <div id="container">
         <h1 id="title" class="text-3xl font-bold cursor-pointer" onclick="resetToInitialState()">Trading Strategy Tester</h1>
         <div id="prompt-section">
-            <span id="input-mirror"></span>
-            <input
+            <div id="prompt-wrapper">
+                <span id="input-mirror"></span>
+                <input
                     type="text"
                     id="prompt"
                     placeholder="Enter your strategy..."
                     class="text-input"
                     oninput="adjustWidth()"
-            >
-            <button onclick="submitPrompt()" class="arrow-button">&uarr;</button>
+                >
+                <button onclick="submitPrompt()" class="arrow-button">&uarr;</button>
+            </div>
+
+            <div id="result-tooltip-wrapper" class="hidden">
+                <button id="tooltip-button" class="tooltip-button" onclick="copyResultString()" data-label="Generated" data-hover="Copy"></button>
+                <div id="result-tooltip" class="tooltip-box"></div>
+            </div>
+
         </div>
     </div>
+
+    <div id="result-string" style="margin-top: 1em; font-style: italic; color: #666;"></div>
 
     <!-- Results section -->
     <div id="results-section" class="hidden">
@@ -48,9 +58,10 @@
     <div class="fixed bottom-4 right-4 bg-white shadow rounded p-2" id="llm-selector">
         <label for="llm-choice" class="block text-sm font-medium text-gray-700">Select LLM:</label>
         <select id="llm-choice" class="mt-1 block w-full border border-gray-300 rounded p-2">
-            <option value="llama3_2-1B_tst_ft">Llama 3.2 1B</option>
-            <option value="qwen2_5-0_5B_tst_ft">Qwen 2.5 0.5B</option>
-            <option value="chat-gpt-api">CHAT GPT API</option>
+            <option value="llama3-2-3B_tst_ft-all">Llama 3.2</option>
+            <option value="llama3-2-1B_tst_ft-">Llama 3.2 Fields</option>
+            <option value="llama3-2-all-rag">Llama 3.2 RAG</option>
+            <option value="llama3-2-fields-rag">Llama 3.2 RAG Fields</option>
             <option value="strategy_object">Strategy object</option>
         </select>
     </div>

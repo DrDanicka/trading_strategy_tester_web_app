@@ -16,4 +16,7 @@ export function resetToInitialState() {
   // Fade out results section if visible
   const results = document.getElementById('results-section');
   fadeOut(results);
+
+  document.getElementById("result-tooltip-wrapper").classList.add("hidden");
+
 }

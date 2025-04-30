@@ -43,8 +43,21 @@ export function submitPrompt() {
     toggleLoader(false);
 
     document.getElementById('title').style.pointerEvents = 'auto';
+
+    if (data.result_string) {
+        const tooltipBox = document.getElementById("result-tooltip");
+        tooltipBox.textContent = data.result_string;
+        document.getElementById("result-tooltip-wrapper").classList.remove("hidden");
+    }
+
   })
   .catch(error => {toggleLoader(false);
     console.error('Error:', error);
   });
 }
+
+export function copyResultString() {
+    const text = document.getElementById("result-tooltip").textContent;
+    navigator.clipboard.writeText(text);
+}
+

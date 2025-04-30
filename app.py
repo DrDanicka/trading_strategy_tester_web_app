@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from trading_strategy_tester.llm_communication.prompt_processor import process_prompt
 from trading_strategy_tester.enums.llm_model_enum import LLMModel, llm_model_dict
-from trading_strategy_tester.trade.trade import Trade
 import plotly
 import json
 
@@ -28,7 +27,7 @@ def get_results():
     llm_choice = request.json.get("llm_choice")
     llm_model: LLMModel = llm_model_dict[llm_choice]
 
-    trades, graphs, stats = process_prompt(user_input, llm_model)
+    trades, graphs, stats, result_string = process_prompt(user_input, llm_model)
 
     price_graph_light = json.loads(plotly.io.to_json(graphs['PRICE'].get_plot(dark=False)))
     price_graph_dark = json.loads(plotly.io.to_json(graphs['PRICE'].get_plot(dark=True)))
@@ -49,7 +48,8 @@ def get_results():
         "buy_graphs_dark": buy_graphs_dark,
         "sell_graphs_light": sell_graphs_light,
         "sell_graphs_dark": sell_graphs_dark,
-        "stats": stats
+        "stats": stats,
+        "result_string": result_string
     })
 
 if __name__ == '__main__':
