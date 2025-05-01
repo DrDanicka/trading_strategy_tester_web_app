@@ -4,9 +4,11 @@ export function fadeOut(element) {
   setTimeout(() => {
     element.style.display = "none";
   }, 500);
+  element.classList.add('hidden');
 }
 
 export function fadeIn(element, display = "block") {
+  element.classList.remove('hidden');
   element.style.opacity = 0;
   element.style.display = display;
   element.style.transition = "opacity 0.5s ease-in";

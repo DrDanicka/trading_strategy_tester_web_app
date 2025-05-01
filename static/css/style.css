@@ -9,7 +9,7 @@ html, body {
   margin-top: 110px;
   position: relative;
   overflow: hidden;
-  opacity: 1;
+  opacity: 100;
   transition: opacity 0.3s ease-in-out;
 }
 
@@ -222,8 +222,6 @@ html, body {
   border-bottom: 2px solid #555;
 }
 
-
-
 /* Loader Styles */
 .loader {
   position: relative;
@@ -315,6 +313,10 @@ html, body {
   position: relative;
 }
 
+#changes-tooltip-wrapper {
+  position: relative;
+}
+
 .tooltip-button {
   border: 1px solid #ccc;
   background-color: #f5f5f5;
@@ -345,7 +347,7 @@ html, body {
 }
 
 
-#result-tooltip {
+.tooltip-box {
   display: none;
   position: absolute;
   top: 120%;
@@ -363,6 +365,10 @@ html, body {
 }
 
 #result-tooltip-wrapper:hover #result-tooltip {
+  display: block;
+}
+
+#changes-tooltip-wrapper:hover #changes-tooltip {
   display: block;
 }
 
@@ -476,4 +482,38 @@ html, body {
 #llm-choice,
 #llm-choice option {
   transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+
+
+.validation-error {
+    border: 2px solid #e74c3c;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #ffe6e6;
+    color: #c0392b;
+    max-width: 600px;
+    margin: 20px auto;
+    font-size: 16px;
+    text-align: left;
+}
+
+.validation-error h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.validation-error ul {
+    padding-left: 20px;
+    margin: 0;
+}
+
+.validation-error li {
+    margin-bottom: 5px;
+}
+
+.hidden {
+    display: none !important;
 }

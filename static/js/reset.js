@@ -18,5 +18,6 @@ export function resetToInitialState() {
   fadeOut(results);
 
   document.getElementById("result-tooltip-wrapper").classList.add("hidden");
+  document.getElementById("changes-tooltip-wrapper").classList.add("hidden");
 
 }

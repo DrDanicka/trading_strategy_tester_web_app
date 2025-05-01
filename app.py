@@ -27,7 +27,17 @@ def get_results():
     llm_choice = request.json.get("llm_choice")
     llm_model: LLMModel = llm_model_dict[llm_choice]
 
-    trades, graphs, stats, result_string = process_prompt(user_input, llm_model)
+    trades, graphs, stats, result_string, changes = process_prompt(user_input, llm_model)
+
+    if trades is None:
+        # Prepare bullet points (just the values)
+        change_values = list(changes.values())
+        return jsonify({
+            "validation_failed": True,
+            "message": "Validation of the object failed.",
+            "result_string": result_string,
+            "changes": change_values
+        })
 
     price_graph_light = json.loads(plotly.io.to_json(graphs['PRICE'].get_plot(dark=False)))
     price_graph_dark = json.loads(plotly.io.to_json(graphs['PRICE'].get_plot(dark=True)))
@@ -41,6 +51,7 @@ def get_results():
     trades_list = [trade.get_summary_with_units() for trade in trades]
 
     return jsonify({
+        "validation_failed": False,
         "trades": trades_list,
         "price_graph_light": price_graph_light,
         "price_graph_dark": price_graph_dark,
@@ -49,7 +60,8 @@ def get_results():
         "sell_graphs_light": sell_graphs_light,
         "sell_graphs_dark": sell_graphs_dark,
         "stats": stats,
-        "result_string": result_string
+        "result_string": result_string,
+        "changes": changes
     })
 
 if __name__ == '__main__':

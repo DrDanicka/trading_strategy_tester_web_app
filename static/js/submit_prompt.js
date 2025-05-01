@@ -19,11 +19,12 @@ export function submitPrompt() {
   // Disable title click while loading
   document.getElementById('title').style.pointerEvents = 'none';
 
-  // Fade out current results
-  const results = document.getElementById('results-section');
-  if (!results.classList.contains('hidden')) {
-    fadeOut(results);
-  }
+  const resultsSection = document.getElementById('results-section');
+  const errorBox = document.getElementById('error-box');
+  const splitContainer = document.getElementById('split-container');
+
+  // Instead of fading out everything, check what's visible
+  resultsSection.classList.add('hidden');
 
   fetch('/process_prompt', {
     method: 'POST',
@@ -32,16 +33,10 @@ export function submitPrompt() {
   })
   .then(response => response.json())
   .then(data => {
-    // Fade in new results
-    fadeIn(results, 'block');
+    fadeIn(resultsSection, 'block');
+    const errorList = document.getElementById("error-list");
 
-    renderTradesAndStats(data.trades, data.stats);
-
-    setCachedGraphs(data);
-
-    renderAllGraphs();
     toggleLoader(false);
-
     document.getElementById('title').style.pointerEvents = 'auto';
 
     if (data.result_string) {
@@ -50,14 +45,38 @@ export function submitPrompt() {
         document.getElementById("result-tooltip-wrapper").classList.remove("hidden");
     }
 
-  })
+    if (data.validation_failed) {
+        errorList.innerHTML = data.changes.map(change => `<li>${change}</li>`).join('');
+        errorBox.classList.remove('hidden');
+        splitContainer.classList.add('hidden');
+        document.getElementById("changes-tooltip-wrapper").classList.add("hidden");
+    }else{
+        // Valid result: show graphs/stats
+        splitContainer.classList.remove('hidden');
+        errorBox.classList.add('hidden');
+
+        renderTradesAndStats(data.trades, data.stats);
+        setCachedGraphs(data);
+        renderAllGraphs();
+
+        if (data.changes && Object.keys(data.changes).length > 0) {
+            const changesTooltip = document.getElementById("changes-tooltip");
+            const bulletPoints = Object.values(data.changes).map(change => `• ${change}`).join('\n');
+            changesTooltip.textContent = bulletPoints;
+            document.getElementById("changes-tooltip-wrapper").classList.remove("hidden");
+        } else {
+            document.getElementById("changes-tooltip-wrapper").classList.add("hidden");
+        }
+    }
+
+})
   .catch(error => {toggleLoader(false);
     console.error('Error:', error);
   });
 }
 
+
 export function copyResultString() {
     const text = document.getElementById("result-tooltip").textContent;
     navigator.clipboard.writeText(text);
 }
-

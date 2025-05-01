@@ -27,13 +27,20 @@
                 <div id="result-tooltip" class="tooltip-box"></div>
             </div>
 
+            <div id="changes-tooltip-wrapper" class="hidden">
+                <button id="tooltip-button" class="tooltip-button" data-label="Changes" data-hover="Changes"></button>
+                <div id="changes-tooltip" class="tooltip-box"></div>
+            </div>
         </div>
     </div>
 
-    <div id="result-string" style="margin-top: 1em; font-style: italic; color: #666;"></div>
-
     <!-- Results section -->
     <div id="results-section" class="hidden">
+        <div id="error-box" class="validation-error">
+            <h2>Validation failed.</h2>
+            <ul id="error-list"></ul>
+        </div>
+
         <div id="split-container">
           <div id="graph-pane">
               <div id="graph-container"></div>
