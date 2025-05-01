@@ -44,6 +44,9 @@ export function submitPrompt() {
         tooltipBox.textContent = data.result_string;
         document.getElementById("result-tooltip-wrapper").classList.remove("hidden");
     }
+    else{
+        document.getElementById("result-tooltip-wrapper").classList.add("hidden");
+    }
 
     if (data.validation_failed) {
         errorList.innerHTML = data.changes.map(change => `<li>${change}</li>`).join('');

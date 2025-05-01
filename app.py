@@ -27,7 +27,12 @@ def get_results():
     llm_choice = request.json.get("llm_choice")
     llm_model: LLMModel = llm_model_dict[llm_choice]
 
-    trades, graphs, stats, result_string, changes = process_prompt(user_input, llm_model)
+    try:
+        trades, graphs, stats, result_string, changes = process_prompt(user_input, llm_model)
+    except ValueError as e:
+        changes = {'': str(e)}
+        trades = None
+        result_string = None
 
     if trades is None:
         # Prepare bullet points (just the values)
