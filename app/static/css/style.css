@@ -485,7 +485,7 @@ html, body {
 }
 
 
-
+/* Validation error box design */
 .validation-error {
     border: 2px solid #e74c3c;
     border-radius: 12px;

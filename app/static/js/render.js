@@ -1,17 +1,32 @@
 import { getCachedGraphs } from "./cache.js";
 
+/**
+ * Format a string label by replacing underscores with spaces and capitalizing each word.
+ *
+ * @param {string} key - The string to format.
+ * @returns {string} - Formatted label.
+ */
 export function formatLabel(key) {
   return key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
+/**
+ * Render trade data and strategy statistics in the UI:
+ * - Builds a tabbed stats section (Overview + Performance).
+ * - Builds a table of trades with optional percentage values.
+ *
+ * @param {Array} trades - List of trade objects to display.
+ * @param {Object} stats - Stats object with various performance metrics.
+ */
 export function renderTradesAndStats(trades, stats) {
   const statsSection = document.getElementById('stats-section');
   const tradesSection = document.getElementById('trades-section');
 
+  // Clear previous content
   tradesSection.innerHTML = '';
   statsSection.innerHTML = '';
 
-
+  // Create tabs for Overview and Performance
   const tabHeader = document.createElement('div');
   tabHeader.className = 'stats-tab-header';
 
@@ -26,6 +41,7 @@ export function renderTradesAndStats(trades, stats) {
   const tabContent = document.createElement('div');
   tabContent.className = 'stats-tab-content';
 
+  // === Overview tab with key metrics ===
   const overviewTab = document.createElement('div');
   overviewTab.className = 'stats-tab-panel';
   overviewTab.style.display = 'grid';
@@ -35,13 +51,16 @@ export function renderTradesAndStats(trades, stats) {
   overviewTab.style.flex = '1';
   overviewTab.style.alignItems = 'center';
 
+  // Performance tab (detailed stats)
   const perfTab = document.createElement('div');
   perfTab.className = 'stats-tab-panel';
   perfTab.style.display = 'none';
   perfTab.style.overflowY = 'auto';
 
-
-  // === Populate Overview with stacked labels + large values ===
+  /**
+   * Create a grid block for one metric (label + value).
+   * Optionally color the value for P&L.
+   */
   function createMetricBlock(label, value, isPnl = false) {
     const wrapper = document.createElement('div');
     wrapper.style.display = 'flex';
@@ -72,24 +91,17 @@ export function renderTradesAndStats(trades, stats) {
     return wrapper;
   }
 
-  // Add P&L full-width on top
+  // Populate Overview: key metrics in a grid layout
   overviewTab.appendChild(createMetricBlock('P&L', stats['P&L'], true));
   overviewTab.appendChild(createMetricBlock('P&L(%)', stats['P&L Percentage'], true));
-
-  // 2nd row
   overviewTab.appendChild(createMetricBlock('Total Trades', stats['Total Trades']));
   overviewTab.appendChild(
-  createMetricBlock(
-    'Profitable Trades',
-    `${stats['Number of Winning Trades']} / ${stats['Total Trades']}`
-    )
+    createMetricBlock('Profitable Trades', `${stats['Number of Winning Trades']} / ${stats['Total Trades']}`)
   );
-
-  // 3rd row
   overviewTab.appendChild(createMetricBlock('Max Drawdown', stats['Max Drawdown']));
   overviewTab.appendChild(createMetricBlock('Profit Factor', stats['Profit factor']));
 
-  // === Populate Performance ===
+  // Populate Performance: all stats as a list
   Object.keys(stats).forEach(key => {
     const row = document.createElement('div');
     row.style.display = 'flex';
@@ -133,27 +145,17 @@ export function renderTradesAndStats(trades, stats) {
   statsSection.appendChild(tabHeader);
   statsSection.appendChild(tabContent);
 
-  // === RIGHT: Trades Table ===
+  // === Trades table ===
   const table = document.createElement('table');
   table.className = 'trades-table';
 
   const columns = [
-    'ID',
-    'Type',
-    'Entry Signal',
-    'Exit Signal',
-    'Entry Date',
-    'Exit Date',
-    'Entry Price',
-    'Exit Price',
-    'Contracts',
-    'P&L',
-    'Cumulative P&L',
-    'Run-up',
-    'Drawdown',
-    'Current Capital'
+    'ID', 'Type', 'Entry Signal', 'Exit Signal', 'Entry Date', 'Exit Date',
+    'Entry Price', 'Exit Price', 'Contracts', 'P&L', 'Cumulative P&L',
+    'Run-up', 'Drawdown', 'Current Capital'
   ];
 
+  // Build table header
   const thead = document.createElement('thead');
   const headerRow = document.createElement('tr');
   columns.forEach(col => {
@@ -164,14 +166,15 @@ export function renderTradesAndStats(trades, stats) {
   thead.appendChild(headerRow);
   table.appendChild(thead);
 
+  // Populate table body
   const tbody = document.createElement('tbody');
-  trades.forEach((trade, index) => {
+  trades.forEach((trade) => {
     const row = document.createElement('tr');
     columns.forEach(col => {
       const cell = document.createElement('td');
       const value = trade[col] !== undefined ? trade[col] : '-';
 
-      // Check if there's a percentage alternative
+      // Add percentage alternative if available
       const percentageAlt = trade[`Percentage ${col}`] || trade[`${col} Percentage`];
 
       if (percentageAlt) {
@@ -189,12 +192,9 @@ export function renderTradesAndStats(trades, stats) {
         }
 
         if (col === 'P&L') {
-          const numericValue = parseFloat(value.replace(/[^\d.-]/g, '')); // Remove $ sign etc.
-
+          const numericValue = parseFloat(value.replace(/[^\d.-]/g, ''));
           const color = numericValue > 0 ? 'green' :
-                        numericValue < 0 ? 'red' :
-                        ''; // Neutral or zero
-
+                        numericValue < 0 ? 'red' : '';
           if (color) {
             main.style.color = color;
             sub.style.color = color;
@@ -216,7 +216,13 @@ export function renderTradesAndStats(trades, stats) {
   tradesSection.appendChild(table);
 }
 
-
+/**
+ * Render a group of graphs (e.g., multiple Buy/Sell graphs) as a tabbed UI.
+ *
+ * @param {HTMLElement} container - The container to render into.
+ * @param {Array} graphs - Array of graph data objects.
+ * @param {string} groupLabel - Label for each graph (e.g., "Buy", "Sell").
+ */
 export function renderGraphGroup(container, graphs, groupLabel) {
   if (graphs.length === 1) {
     createAndRenderGraph(container, graphs[0]);
@@ -240,27 +246,24 @@ export function renderGraphGroup(container, graphs, groupLabel) {
     tabBtn.className = 'tab-button';
     tabBtn.textContent = `${groupLabel} ${index + 1}`;
 
-    // Create panel container
+    // Create graph container
     const graphWrapper = document.createElement('div');
     graphWrapper.className = 'graph-wrapper';
     graphWrapper.style.display = index === 0 ? 'block' : 'none';
 
     // Store tab metadata
-    tabs.push({ tabBtn, contentDiv: graphWrapper, graph, rendered: false });
+    tabs.push({ tabBtn, contentDiv: graphWrapper, graph });
 
-    Plotly.newPlot(graphWrapper, graph, {}, { responsive: true })
-    Plotly.Plots.resize(graphWrapper)
+    // Render graph immediately
+    Plotly.newPlot(graphWrapper, graph, {}, { responsive: true });
+    Plotly.Plots.resize(graphWrapper);
 
+    // Tab click handler
     tabBtn.addEventListener('click', () => {
-      // Hide all panels
       tabs.forEach(tab => tab.contentDiv.style.display = 'none');
-      // Show selected
       graphWrapper.style.display = 'block';
-
-      // Update button styles
       tabs.forEach(tab => tab.tabBtn.classList.remove('active'));
       tabBtn.classList.add('active');
-
       Plotly.Plots.resize(graphWrapper);
     });
 
@@ -276,18 +279,20 @@ export function renderGraphGroup(container, graphs, groupLabel) {
   tabs[0].tabBtn.classList.add('active');
 }
 
-
+/**
+ * Render all cached graphs: price graph + Buy/Sell groups.
+ * Uses the dark or light theme based on body class.
+ */
 export function renderAllGraphs() {
   const darkMode = document.body.classList.contains('dark-mode');
   const container = document.getElementById('graph-container');
   container.innerHTML = '';
 
-  const cachedGraphs = getCachedGraphs()
+  const cachedGraphs = getCachedGraphs();
 
-  // Always show the price graph
+  // Always render the price graph
   const priceSection = document.createElement('div');
   priceSection.className = 'graph-row';
-
   createAndRenderGraph(priceSection, cachedGraphs.price_graph[darkMode ? 'dark' : 'light']);
 
   const buy = cachedGraphs.buy_graphs[darkMode ? 'dark' : 'light'];
@@ -297,7 +302,7 @@ export function renderAllGraphs() {
   const hasSell = sell.length > 0;
 
   if (!hasBuy && !hasSell) {
-    // Render only price graph
+    // Only price graph available
     container.appendChild(priceSection);
     return;
   }
@@ -323,11 +328,15 @@ export function renderAllGraphs() {
   container.appendChild(row);
 }
 
-
+/**
+ * Render a single graph inside a container using Plotly.
+ *
+ * @param {HTMLElement} container - The container to render into.
+ * @param {Object} graphData - The graph data object for Plotly.
+ */
 export function createAndRenderGraph(container, graphData) {
   const wrapper = document.createElement('div');
   wrapper.className = 'graph-wrapper';
-
 
   Plotly.newPlot(wrapper, graphData, {}, { responsive: true });
   Plotly.Plots.resize(wrapper);
