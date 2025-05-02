@@ -94,12 +94,34 @@ def create_ollama_model(gguf_filename):
     except OSError as e:
         print(f"Could not delete {gguf_filename}: {e}", flush=True)
 
+def pull_base_model(model_name):
+    """
+    Ensure the base model is downloaded to Ollama.
+    """
+    print(f"\nEnsuring base model '{model_name}' is available in Ollama...", flush=True)
+    try:
+        # Check if it's already pulled
+        result = subprocess.run(["ollama", "list"], check=True, capture_output=True, text=True)
+        existing_models = result.stdout.lower()
+        if model_name.lower() in existing_models:
+            print(f"Base model '{model_name}' already exists, skipping pull.", flush=True)
+        else:
+            subprocess.run(["ollama", "pull", model_name], check=True)
+            print(f"Base model '{model_name}' pulled successfully.", flush=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to pull base model '{model_name}'. Please check Ollama installation.", flush=True)
+        sys.exit(1)
+
+
 def main():
     """
     Main routine to ensure all models are downloaded and created in Ollama.
     Skips models that are already present.
     """
     print("Checking and downloading model files...", flush=True)
+
+    # Pull llama3.2 base model for RAG
+    pull_base_model('llama3.2')
 
     for filename in FILES:
         model_name = filename.split(".")[0]
