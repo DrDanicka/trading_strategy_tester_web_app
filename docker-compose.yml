@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: tst_web_app
+    ports:
+      - "5001:5000"
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434

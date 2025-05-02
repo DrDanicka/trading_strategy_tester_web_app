@@ -1,10 +1,8 @@
-# Use Python base image
 FROM python:3.10
 
 WORKDIR /app
 
-# Copy code into the container
-COPY . .
+COPY app/ .
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
