@@ -4,7 +4,7 @@ import sys
 
 FILES = {
     "llama3-2-1B_tst_ft-end_date.gguf": "https://drive.google.com/file/d/1Eo96z_nHFNYoafyLslPVOK8GC_hxKKAE/view?usp=share_link",
-    "lama3-2-1B_tst_ft-initial_capital.gguf": "https://drive.google.com/file/d/1E0jGYnm8gJOgitrgIJxTtGlTZpeslx75/view?usp=sharing",
+    "llama3-2-1B_tst_ft-initial_capital.gguf": "https://drive.google.com/file/d/1E0jGYnm8gJOgitrgIJxTtGlTZpeslx75/view?usp=sharing",
     "llama3-2-1B_tst_ft-interval.gguf": "https://drive.google.com/file/d/1Nn58Xo95_F1lBq7HHhyMtG_XVeFp9lr7/view?usp=sharing",
     "llama3-2-1B_tst_ft-order_size.gguf": "https://drive.google.com/file/d/1m9CW3jkJgt0ps4dVeCqlplExWrU07qrN/view?usp=sharing",
     "llama3-2-1B_tst_ft-period.gguf": "https://drive.google.com/file/d/1m9CW3jkJgt0ps4dVeCqlplExWrU07qrN/view?usp=sharing",
@@ -13,7 +13,7 @@ FILES = {
     "llama3-2-1B_tst_ft-stop_loss.gguf": "https://drive.google.com/file/d/1FeM6ng-xr4tQXoD4mWpLlf97nPK5LeCl/view?usp=sharing",
     "llama3-2-1B_tst_ft-take_profit.gguf": "https://drive.google.com/file/d/1shxvVamvqLcwF_oswSwzJHIszJdkRRk7/view?usp=sharing",
     "llama3-2-1B_tst_ft-ticker.gguf": "https://drive.google.com/file/d/1-hSN_TSizdtzTYSL90XPDhzW8-hz4ISK/view?usp=sharing",
-    "lama3-2-1B_tst_ft-trade_commissions.gguf": "https://drive.google.com/file/d/1UNP-w2Cxe_VsV15wgVqKdEfie6Bl87vf/view?usp=sharing",
+    "llama3-2-1B_tst_ft-trade_commissions.gguf": "https://drive.google.com/file/d/1UNP-w2Cxe_VsV15wgVqKdEfie6Bl87vf/view?usp=sharing",
     "llama3-2-3B_tst_ft-all.gguf": "https://drive.google.com/file/d/1O3cy35Fz193gyZ9eBccA71f7aVfASNI2/view?usp=sharing",
     "llama3-2-3B_tst_ft-conditions.gguf": "https://drive.google.com/file/d/1fwc8Svx7psEJm3ZWEhQOKrAj2a9xVaQF/view?usp=sharing"
 }
@@ -44,7 +44,7 @@ def model_exists(model_name):
         existing_models = result.stdout.lower()
         return model_name.lower() in existing_models
     except subprocess.CalledProcessError as e:
-        print("❗ Error checking Ollama models.")
+        print("Error checking Ollama models.")
         print(e)
         sys.exit(1)
 
