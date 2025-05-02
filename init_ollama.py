@@ -2,21 +2,21 @@ import os
 import subprocess
 import sys
 
-FILES = {
-    "llama3-2-1B_tst_ft-end_date.gguf": "1Eo96z_nHFNYoafyLslPVOK8GC_hxKKAE",
-    "llama3-2-1B_tst_ft-initial_capital.gguf": "1E0jGYnm8gJOgitrgIJxTtGlTZpeslx75",
-    "llama3-2-1B_tst_ft-interval.gguf": "1Nn58Xo95_F1lBq7HHhyMtG_XVeFp9lr7",
-    "llama3-2-1B_tst_ft-order_size.gguf": "1m9CW3jkJgt0ps4dVeCqlplExWrU07qrN",
-    "llama3-2-1B_tst_ft-period.gguf": "1m9CW3jkJgt0ps4dVeCqlplExWrU07qrN",
-    "llama3-2-1B_tst_ft-position_type.gguf": "1hNnOfObBY4HHv-Z8_exhJD1gLQcdVMqn",
-    "llama3-2-1B_tst_ft-start_date.gguf": "1f4Xsuk4wzT_B1gGushpROqhZe2ltAjpN",
-    "llama3-2-1B_tst_ft-stop_loss.gguf": "1FeM6ng-xr4tQXoD4mWpLlf97nPK5LeCl",
-    "llama3-2-1B_tst_ft-take_profit.gguf": "1shxvVamvqLcwF_oswSwzJHIszJdkRRk7",
-    "llama3-2-1B_tst_ft-ticker.gguf": "1-hSN_TSizdtzTYSL90XPDhzW8-hz4ISK",
-    "llama3-2-1B_tst_ft-trade_commissions.gguf": "1UNP-w2Cxe_VsV15wgVqKdEfie6Bl87vf",
-    "llama3-2-3B_tst_ft-all.gguf": "1O3cy35Fz193gyZ9eBccA71f7aVfASNI2",
-    "llama3-2-3B_tst_ft-conditions.gguf": "1fwc8Svx7psEJm3ZWEhQOKrAj2a9xVaQF"
-}
+FILES = [
+    "llama3-2-1B_tst_ft-end_date.gguf",
+    "llama3-2-1B_tst_ft-initial_capital.gguf",
+    "llama3-2-1B_tst_ft-interval.gguf",
+    "llama3-2-1B_tst_ft-order_size.gguf",
+    "llama3-2-1B_tst_ft-period.gguf",
+    "llama3-2-1B_tst_ft-position_type.gguf",
+    "llama3-2-1B_tst_ft-start_date.gguf",
+    "llama3-2-1B_tst_ft-stop_loss.gguf",
+    "llama3-2-1B_tst_ft-take_profit.gguf",
+    "llama3-2-1B_tst_ft-ticker.gguf",
+    "llama3-2-1B_tst_ft-trade_commissions.gguf",
+    "llama3-2-3B_tst_ft-all.gguf",
+    "llama3-2-3B_tst_ft-conditions.gguf"
+]
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 DEST_DIR = os.path.join(script_dir, '_gguf_weights')
@@ -25,18 +25,13 @@ MODELFILE_DIR = os.path.join(script_dir, 'modelfiles')
 os.makedirs(DEST_DIR, exist_ok=True)
 os.makedirs(MODELFILE_DIR, exist_ok=True)
 
-def ensure_gdown():
-    try:
-        import gdown
-        print("'gdown' is already installed.")
-    except ImportError:
-        print("'gdown' is not installed. Installing now...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "gdown"])
-        print("'gdown' has been installed successfully.")
-
-def download_file(file_id, dest_file):
+def download_file(download_link, dest_file):
     print(f"\nDownloading {dest_file}...")
-    subprocess.run(["gdown", "--id", file_id, "-O", dest_file], check=True)
+    try:
+        subprocess.run(["curl", "-L", "-o", dest_file, download_link], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to download {dest_file}. Please check your connection or the URL.")
+        sys.exit(1)
 
 def model_exists(model_name):
     try:
@@ -77,20 +72,18 @@ def create_ollama_model(gguf_filename):
         print(f"Could not delete {gguf_filename}: {e}")
 
 def main():
-    print("Checking for gdown...")
-    ensure_gdown()
-
     print("Checking and downloading model files...")
 
-    for filename, file_id in FILES.items():
+    for filename in FILES:
         model_name = filename.split(".")[0]
+        download_link = f"https://huggingface.co/drdanicka/trading-strategy-tester-weights/resolve/main/{filename}"
 
         if model_exists(model_name):
             print(f"Ollama model '{model_name}' already exists, skipping.")
         else:
             print(f"Ollama model '{model_name}' not found. Proceeding to download + create...")
             dest_file = os.path.join(DEST_DIR, filename)
-            download_file(file_id, dest_file)
+            download_file(download_link, dest_file)
             create_ollama_model(filename)
 
     print("\nAll models are ready.")
