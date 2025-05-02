@@ -3,19 +3,19 @@ import subprocess
 import sys
 
 FILES = {
-    "llama3-2-1B_tst_ft-end_date.gguf": "https://drive.google.com/file/d/1Eo96z_nHFNYoafyLslPVOK8GC_hxKKAE/view?usp=share_link",
-    "llama3-2-1B_tst_ft-initial_capital.gguf": "https://drive.google.com/file/d/1E0jGYnm8gJOgitrgIJxTtGlTZpeslx75/view?usp=sharing",
-    "llama3-2-1B_tst_ft-interval.gguf": "https://drive.google.com/file/d/1Nn58Xo95_F1lBq7HHhyMtG_XVeFp9lr7/view?usp=sharing",
-    "llama3-2-1B_tst_ft-order_size.gguf": "https://drive.google.com/file/d/1m9CW3jkJgt0ps4dVeCqlplExWrU07qrN/view?usp=sharing",
-    "llama3-2-1B_tst_ft-period.gguf": "https://drive.google.com/file/d/1m9CW3jkJgt0ps4dVeCqlplExWrU07qrN/view?usp=sharing",
-    "llama3-2-1B_tst_ft-position_type.gguf": "https://drive.google.com/file/d/1hNnOfObBY4HHv-Z8_exhJD1gLQcdVMqn/view?usp=sharing",
-    "llama3-2-1B_tst_ft-start_date.gguf": "https://drive.google.com/file/d/1f4Xsuk4wzT_B1gGushpROqhZe2ltAjpN/view?usp=sharing",
-    "llama3-2-1B_tst_ft-stop_loss.gguf": "https://drive.google.com/file/d/1FeM6ng-xr4tQXoD4mWpLlf97nPK5LeCl/view?usp=sharing",
-    "llama3-2-1B_tst_ft-take_profit.gguf": "https://drive.google.com/file/d/1shxvVamvqLcwF_oswSwzJHIszJdkRRk7/view?usp=sharing",
-    "llama3-2-1B_tst_ft-ticker.gguf": "https://drive.google.com/file/d/1-hSN_TSizdtzTYSL90XPDhzW8-hz4ISK/view?usp=sharing",
-    "llama3-2-1B_tst_ft-trade_commissions.gguf": "https://drive.google.com/file/d/1UNP-w2Cxe_VsV15wgVqKdEfie6Bl87vf/view?usp=sharing",
-    "llama3-2-3B_tst_ft-all.gguf": "https://drive.google.com/file/d/1O3cy35Fz193gyZ9eBccA71f7aVfASNI2/view?usp=sharing",
-    "llama3-2-3B_tst_ft-conditions.gguf": "https://drive.google.com/file/d/1fwc8Svx7psEJm3ZWEhQOKrAj2a9xVaQF/view?usp=sharing"
+    "llama3-2-1B_tst_ft-end_date.gguf": "1Eo96z_nHFNYoafyLslPVOK8GC_hxKKAE",
+    "llama3-2-1B_tst_ft-initial_capital.gguf": "1E0jGYnm8gJOgitrgIJxTtGlTZpeslx75",
+    "llama3-2-1B_tst_ft-interval.gguf": "1Nn58Xo95_F1lBq7HHhyMtG_XVeFp9lr7",
+    "llama3-2-1B_tst_ft-order_size.gguf": "1m9CW3jkJgt0ps4dVeCqlplExWrU07qrN",
+    "llama3-2-1B_tst_ft-period.gguf": "1m9CW3jkJgt0ps4dVeCqlplExWrU07qrN",
+    "llama3-2-1B_tst_ft-position_type.gguf": "1hNnOfObBY4HHv-Z8_exhJD1gLQcdVMqn",
+    "llama3-2-1B_tst_ft-start_date.gguf": "1f4Xsuk4wzT_B1gGushpROqhZe2ltAjpN",
+    "llama3-2-1B_tst_ft-stop_loss.gguf": "1FeM6ng-xr4tQXoD4mWpLlf97nPK5LeCl",
+    "llama3-2-1B_tst_ft-take_profit.gguf": "1shxvVamvqLcwF_oswSwzJHIszJdkRRk7",
+    "llama3-2-1B_tst_ft-ticker.gguf": "1-hSN_TSizdtzTYSL90XPDhzW8-hz4ISK",
+    "llama3-2-1B_tst_ft-trade_commissions.gguf": "1UNP-w2Cxe_VsV15wgVqKdEfie6Bl87vf",
+    "llama3-2-3B_tst_ft-all.gguf": "1O3cy35Fz193gyZ9eBccA71f7aVfASNI2",
+    "llama3-2-3B_tst_ft-conditions.gguf": "1fwc8Svx7psEJm3ZWEhQOKrAj2a9xVaQF"
 }
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -34,9 +34,9 @@ def ensure_gdown():
         subprocess.check_call([sys.executable, "-m", "pip", "install", "gdown"])
         print("'gdown' has been installed successfully.")
 
-def download_file(file_link, dest_file):
+def download_file(file_id, dest_file):
     print(f"\nDownloading {dest_file}...")
-    subprocess.run(["gdown", "--fuzzy", file_link, "-O", dest_file], check=True)
+    subprocess.run(["gdown", "--id", file_id, "-O", dest_file], check=True)
 
 def model_exists(model_name):
     try:
@@ -82,7 +82,7 @@ def main():
 
     print("Checking and downloading model files...")
 
-    for filename, file_link in FILES.items():
+    for filename, file_id in FILES.items():
         model_name = filename.split(".")[0]
 
         if model_exists(model_name):
@@ -90,7 +90,7 @@ def main():
         else:
             print(f"Ollama model '{model_name}' not found. Proceeding to download + create...")
             dest_file = os.path.join(DEST_DIR, filename)
-            download_file(file_link, dest_file)
+            download_file(file_id, dest_file)
             create_ollama_model(filename)
 
     print("\nAll models are ready.")
