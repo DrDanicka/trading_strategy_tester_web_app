@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 
 FILES = {
     "llama3-2-1B_tst_ft-end_date.gguf": "https://drive.google.com/file/d/1Eo96z_nHFNYoafyLslPVOK8GC_hxKKAE/view?usp=share_link",
@@ -23,6 +24,15 @@ MODELFILE_DIR = os.path.join(script_dir, 'modelfiles')
 
 os.makedirs(DEST_DIR, exist_ok=True)
 os.makedirs(MODELFILE_DIR, exist_ok=True)
+
+def ensure_gdown():
+    try:
+        import gdown
+        print("'gdown' is already installed.")
+    except ImportError:
+        print("'gdown' is not installed. Installing now...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "gdown"])
+        print("'gdown' has been installed successfully.")
 
 def download_file(file_link, dest_file):
     print(f"\nDownloading {dest_file}...")
@@ -50,6 +60,9 @@ def create_ollama_model(gguf_filename):
     print(f"Ollama model '{model_name}' created.")
 
 def main():
+    print("Checking for gdown...")
+    ensure_gdown()
+
     print("Checking and downloading model files...")
 
     for filename, file_link in FILES.items():
