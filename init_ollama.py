@@ -38,6 +38,16 @@ def download_file(file_link, dest_file):
     print(f"\nDownloading {dest_file}...")
     subprocess.run(["gdown", "--fuzzy", file_link, "-O", dest_file], check=True)
 
+def model_exists(model_name):
+    try:
+        result = subprocess.run(["ollama", "list"], check=True, capture_output=True, text=True)
+        existing_models = result.stdout.lower()
+        return model_name.lower() in existing_models
+    except subprocess.CalledProcessError as e:
+        print("❗ Error checking Ollama models.")
+        print(e)
+        sys.exit(1)
+
 def create_ollama_model(gguf_filename):
     model_name = gguf_filename.split(".")[0]
     model_path = os.path.join(DEST_DIR, gguf_filename)
@@ -59,6 +69,13 @@ def create_ollama_model(gguf_filename):
     subprocess.run(["ollama", "create", model_name, "-f", final_modelfile], check=True)
     print(f"Ollama model '{model_name}' created.")
 
+    # Delete the .gguf file
+    try:
+        os.remove(model_path)
+        print(f"Deleted {gguf_filename} after creating the model.")
+    except OSError as e:
+        print(f"Could not delete {gguf_filename}: {e}")
+
 def main():
     print("Checking for gdown...")
     ensure_gdown()
@@ -66,14 +83,15 @@ def main():
     print("Checking and downloading model files...")
 
     for filename, file_link in FILES.items():
-        dest_file = os.path.join(DEST_DIR, filename)
-        if os.path.isfile(dest_file):
-            print(f"{filename} already exists, skipping download.")
-        else:
-            download_file(file_link, dest_file)
+        model_name = filename.split(".")[0]
 
-        # Create Ollama model after download (or if file already exists)
-        create_ollama_model(filename)
+        if model_exists(model_name):
+            print(f"Ollama model '{model_name}' already exists, skipping.")
+        else:
+            print(f"Ollama model '{model_name}' not found. Proceeding to download + create...")
+            dest_file = os.path.join(DEST_DIR, filename)
+            download_file(file_link, dest_file)
+            create_ollama_model(filename)
 
     print("\nAll models are ready.")
 
