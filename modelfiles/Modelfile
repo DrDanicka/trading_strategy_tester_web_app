@@ -1,4 +1,4 @@
-FROM /Users/danielsoltys/Documents/trading_strategy_tester_web_app/_gguf_weights/llama3-2-1B_tst_ft-end_date.gguf
+FROM /Users/danielsoltys/Documents/trading_strategy_tester_web_app/_gguf_weights/llama3-2-1B_tst_ft-trade_commissions.gguf
 
 template """
 

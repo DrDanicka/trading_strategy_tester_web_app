@@ -120,7 +120,7 @@ def main():
     """
     print("Checking and downloading model files...", flush=True)
 
-    # Pull llama3.2 base model for RAG
+    # Pull llama3.2 base model for Few-shot Prompting
     pull_base_model('llama3.2')
 
     for filename in FILES:
