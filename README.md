@@ -44,4 +44,4 @@ Once you download and install `Ollama`, you can run the following commands:
 
 ## Layout
 
-You can learn more about the layout of the website and how to read it in the [Layout Guide](https://drdanicka.github.io/trading_strategy_tester_web_app/layout/). This guide provides an overview of the different components and how they interact with each other.
+You can learn more about the layout of the website and how to read it in the [Layout Guide](https://drdanicka.github.io/trading_strategy_tester/user/web_ui/main_page/). This guide provides an overview of the different components and how they interact with each other.
