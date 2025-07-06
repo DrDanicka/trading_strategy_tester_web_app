@@ -20,7 +20,7 @@ Detailed instructions on how to write prompts for the trading strategy tester ca
 
 For running the application locally, you need to have `Python 3.10` or higher installed and you have to install `Ollama` for the platform you are using. You can download `Ollama` [here](https://ollama.com/download).
 
-Once you download and install `Ollama`, you can run the following commands:
+Once you download and install `Ollama`, **restart your computer** and then you can run the following commands:
 
 1. Clone the repository:
    ```bash
